@@ -1,49 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="fill_parent"
+android:layout_width="match_parent"
 android:layout_height="wrap_content"
-android:background="@drawable/list_selector"
-android:orientation="horizontal"
 android:padding="5dip" >
+    <!--android:background="@drawable/list_selector"-->
 
 <!--  ListRow Left Thumbnail image -->
 <LinearLayout android:id="@+id/thumbnail"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="3dip"
-    android:layout_alignParentLeft="true"
-    android:layout_marginRight="5dip">
+    android:layout_alignParentStart="true"
+    android:layout_marginEnd="5dip">
 
     <ImageView
         android:id="@+id/list_image"
         android:layout_width="50dip"
-        android:layout_height="50dip"/>
+        android:layout_height="50dip"
+        android:background="@mipmap/ic_launcher"/>
 
 </LinearLayout>
 
 <!-- Person name-->
-<TextView
-    android:id="@+id/tvPersonName"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignTop="@+id/thumbnail"
-    android:layout_toRightOf="@+id/thumbnail"
-    android:text="Rihanna Love the way lie"
-    android:textColor="#040404"
-    android:typeface="sans"
-    android:textSize="15dip"
-    android:textStyle="bold"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/thumbnail"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/tvPersonName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rihanna Love the way lie"
+            android:textColor="#040404"
+            android:typeface="sans"
+            android:textSize="15dip"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvPhoneNumber"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#343434"
+            android:textSize="10dip"
+            android:layout_marginTop="1dip"
+            android:layout_toEndOf="@id/thumbnail"
+            android:text="Just gona stand there and ..." />
+    </LinearLayout>
 
 <!-- Phone number -->
-<TextView
-    android:id="@+id/tvPhoneNumber"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/tvPersonName"
-    android:textColor="#343434"
-    android:textSize="10dip"
-    android:layout_marginTop="1dip"
-    android:layout_toRightOf="@+id/thumbnail"
-    android:text="Just gona stand there and ..." />
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete" />
 
 </RelativeLayout>

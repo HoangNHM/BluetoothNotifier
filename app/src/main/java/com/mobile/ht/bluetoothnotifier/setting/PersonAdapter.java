@@ -22,20 +22,19 @@ import java.util.ArrayList;
 
 public class PersonAdapter extends BaseAdapter {
 
-    private static LayoutInflater inflater;
     private Activity activity;
     private ArrayList<Person> persons;
 
 
     public PersonAdapter(Activity activity, ArrayList<Person> persons) {
-        inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        super();
         this.activity = activity;
         this.persons = persons;
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return persons.size();
     }
 
     @Override
@@ -49,9 +48,10 @@ public class PersonAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View v = convertView;
         if (null == convertView) {
+            LayoutInflater inflater = activity.getLayoutInflater();
             v = inflater.inflate(R.layout.list_row_person, null);
         }
 
@@ -62,6 +62,15 @@ public class PersonAdapter extends BaseAdapter {
         tvPersonName.setText(persons.get(position).getName());
         tvPhoneNumber.setText(persons.get(position).getPhoneNumber());
 
+        // btn Delete
+        Button btnDelete = (Button) v.findViewById(R.id.btnDelete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                persons.remove(position);
+                PersonAdapter.this.notifyDataSetChanged();
+            }
+        });
 
 
         return v;
