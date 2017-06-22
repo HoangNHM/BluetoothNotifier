@@ -16,10 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".setting.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".heart.HeartActivity"></activity>
+        <activity android:name=".heart.HeartActivity" />
+        <activity android:name=".setting.SettingActivity"></activity>
     </application>
 
 </manifest>
