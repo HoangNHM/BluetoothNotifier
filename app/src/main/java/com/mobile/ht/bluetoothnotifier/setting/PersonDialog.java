@@ -12,6 +12,7 @@ import android.widget.EditText;
 import com.mobile.ht.bluetoothnotifier.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by vantuegia on 6/22/2017.

@@ -1,20 +1,15 @@
 package com.mobile.ht.bluetoothnotifier.setting;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.mobile.ht.bluetoothnotifier.R;
-import com.mobile.ht.bluetoothnotifier.heart.HeartActivity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by vantuegia on 6/22/2017.
@@ -23,10 +18,10 @@ import java.util.ArrayList;
 public class PersonAdapter extends BaseAdapter {
 
     private Activity activity;
-    private ArrayList<Person> persons;
+    private List<Person> persons;
 
 
-    public PersonAdapter(Activity activity, ArrayList<Person> persons) {
+    public PersonAdapter(Activity activity, List<Person> persons) {
         super();
         this.activity = activity;
         this.persons = persons;

@@ -14,11 +14,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
 import com.mobile.ht.bluetoothnotifier.MyApplication;
 import com.mobile.ht.bluetoothnotifier.R;
 import com.mobile.ht.bluetoothnotifier.heart.HeartActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +42,7 @@ public class PersonFragment extends Fragment {
 
     private ListView lvPerson;
     private PersonAdapter personAdapter;
-    private ArrayList<Person> persons;
+    private List<Person> persons;
 
 
     private OnFragmentInteractionListener mListener;
@@ -101,7 +103,7 @@ public class PersonFragment extends Fragment {
         lvPerson.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PersonDialog dialog = PersonDialog.newInstance(personAdapter, position, persons);
+                PersonDialog dialog = PersonDialog.newInstance(personAdapter, position, (ArrayList<Person>) persons);
                 dialog.show(getFragmentManager(), "personDialog");
             }
         });
@@ -122,7 +124,7 @@ public class PersonFragment extends Fragment {
                 persons.add(new Person("", ""));
                 personAdapter.notifyDataSetChanged();
                 // edit
-                PersonDialog dialog = PersonDialog.newInstance(personAdapter, persons.size() - 1, persons);
+                PersonDialog dialog = PersonDialog.newInstance(personAdapter, persons.size() - 1, (ArrayList<Person>) persons);
                 dialog.show(getFragmentManager(), "personDialog");
             }
         });
@@ -131,13 +133,12 @@ public class PersonFragment extends Fragment {
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Gson gson = new Gson();
+                String json = gson.toJson(persons);
+                MyApplication.getInstance().pref.edit().putString("persons", json).commit();
                 startActivity(new Intent(getActivity(), HeartActivity.class));
-                Log.d("test", "test");
             }
         });
-
-
-
         return v;
     }
 

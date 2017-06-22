@@ -81,4 +81,5 @@
     <string name="Name">Name :</string>
     <string name="PhoneNumber">Phone number :</string>
     <string name="Save">Save</string>
+    <string name="Setting">Settting</string>
 </resources>

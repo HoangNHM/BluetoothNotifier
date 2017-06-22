@@ -17,33 +17,25 @@ import java.util.ArrayList;
 
 public class SettingActivity extends AppCompatActivity implements PersonFragment.OnFragmentInteractionListener {
 
-
-
     private FrameLayout mFmContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-
-
-
-
         mFmContainer = (FrameLayout) findViewById(R.id.mFmContainer);
         PersonFragment personFragment = PersonFragment.newInstance("", "");
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.mFmContainer, personFragment).commit();
-
-
-
-
-
-
-
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -8,7 +8,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.mobile.ht.bluetoothnotifier.heart.HeartActivity;
+import com.mobile.ht.bluetoothnotifier.setting.Person;
 import com.mobile.ht.bluetoothnotifier.setting.SettingActivity;
+
+import java.util.List;
 
 public class WelcomeActivity extends AppCompatActivity {
     public ImageView img;
@@ -27,8 +30,13 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
     public void SwitchActivity(){
-        Intent intent= new Intent(this, SettingActivity.class);
-        startActivity(intent);
-
+        List<Person> persons = MyApplication.getInstance().persons;
+        if (persons.size() != 0) {
+            Intent intent= new Intent(this, HeartActivity.class);
+            startActivity(intent);
+        } else {
+            Intent intent= new Intent(this, SettingActivity.class);
+            startActivity(intent);
+        }
     }
 }

@@ -16,15 +16,17 @@
         android:theme="@style/AppTheme"
         android:name=".MyApplication">
 
-        <activity android:name=".WelcomeActivity">
+        <activity android:name=".WelcomeActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".heart.HeartActivity" />
-        <activity android:name=".setting.SettingActivity"></activity>
+        <activity android:name=".heart.HeartActivity" android:noHistory="true"/>
+        <activity
+            android:name=".setting.SettingActivity"
+            android:noHistory="true" />
     </application>
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name= "android.permission.SEND_SMS" />
