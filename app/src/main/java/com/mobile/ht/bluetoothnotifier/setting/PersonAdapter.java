@@ -63,14 +63,14 @@ public class PersonAdapter extends BaseAdapter {
         tvPhoneNumber.setText(persons.get(position).getPhoneNumber());
 
         // btn Delete
-        Button btnDelete = (Button) v.findViewById(R.id.btnDelete);
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                persons.remove(position);
-                PersonAdapter.this.notifyDataSetChanged();
-            }
-        });
+//        Button btnDelete = (Button) v.findViewById(R.id.btnDelete);
+//        btnDelete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                persons.remove(position);
+//                PersonAdapter.this.notifyDataSetChanged();
+//            }
+//        });
 
 
         return v;

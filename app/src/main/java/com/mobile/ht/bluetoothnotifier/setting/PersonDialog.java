@@ -1,12 +1,8 @@
 package com.mobile.ht.bluetoothnotifier.setting;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +22,17 @@ public class PersonDialog extends DialogFragment {
     private String name;
     private String phoneNumber;
     private int position;
-    private static ArrayList<Person> persons;
+    private ArrayList<Person> persons;
+    private static PersonAdapter personAdapter;
 
-
-
-    static PersonDialog newInstance(int position, String name, String phoneNumber, ArrayList<Person> persons) {
-        PersonDialog.persons = persons;
+    static PersonDialog newInstance(PersonAdapter personAdapter, int position, ArrayList<Person> persons) {
+        PersonDialog.personAdapter = personAdapter;
         PersonDialog dialog = new PersonDialog();
         Bundle args = new Bundle();
-        args.putString("name", name);
-        args.putString("phoneNumber", phoneNumber);
+        args.putString("name", persons.get(position).getName());
+        args.putString("phoneNumber", persons.get(position).getPhoneNumber());
         args.putInt("position", position);
+        args.putParcelableArrayList("persons", persons);
         dialog.setArguments(args);
         return dialog;
     }
@@ -48,6 +44,7 @@ public class PersonDialog extends DialogFragment {
         name = getArguments().getString("name");
         phoneNumber = getArguments().getString("phoneNumber");
         position = getArguments().getInt("position");
+        persons = getArguments().getParcelableArrayList("persons");
     }
 
     @Nullable
@@ -64,11 +61,21 @@ public class PersonDialog extends DialogFragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                persons.add(position, new Person(etName.getText().toString(), etPhoneNumber.getText().toString()));
+                persons.set(position, new Person(etName.getText().toString(), etPhoneNumber.getText().toString()));
                 PersonDialog.this.dismiss();
+                personAdapter.notifyDataSetChanged();
+
             }
         });
         return view;
+    }
 
+    @Override
+    public void onResume() {
+        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+        super.onResume();
     }
 }

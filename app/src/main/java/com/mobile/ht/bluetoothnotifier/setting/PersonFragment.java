@@ -1,5 +1,6 @@
 package com.mobile.ht.bluetoothnotifier.setting;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mobile.ht.bluetoothnotifier.MyApplication;
 import com.mobile.ht.bluetoothnotifier.R;
 import com.mobile.ht.bluetoothnotifier.heart.HeartActivity;
 
@@ -73,10 +75,8 @@ public class PersonFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         // Test
-        persons = new ArrayList<Person>(2);
-        for (int i = 0; i < 2; i++) {
-            persons.add(new Person("Person " + i, "031351321"));
-        }
+        persons = MyApplication.getInstance().persons;
+
     }
 
     @Override
@@ -87,9 +87,32 @@ public class PersonFragment extends Fragment {
 
 
         lvPerson = (ListView) v.findViewById(R.id.lvPerson);
+//        lvPerson.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                return false;
+//            }
+//        });
+        lvPerson.setClickable(true);
+        lvPerson.setLongClickable(true);
         personAdapter = new PersonAdapter(getActivity(), persons);
         lvPerson.setAdapter(personAdapter);
-        personAdapter.notifyDataSetChanged();
+
+        lvPerson.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PersonDialog dialog = PersonDialog.newInstance(personAdapter, position, persons);
+                dialog.show(getFragmentManager(), "personDialog");
+            }
+        });
+        lvPerson.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                persons.remove(position);
+                personAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
 
         // btn Add
         Button btnAdd = (Button) v.findViewById(R.id.btnAdd);
@@ -99,6 +122,8 @@ public class PersonFragment extends Fragment {
                 persons.add(new Person("", ""));
                 personAdapter.notifyDataSetChanged();
                 // edit
+                PersonDialog dialog = PersonDialog.newInstance(personAdapter, persons.size() - 1, persons);
+                dialog.show(getFragmentManager(), "personDialog");
             }
         });
         //btn Done
@@ -111,14 +136,7 @@ public class PersonFragment extends Fragment {
             }
         });
 
-        lvPerson.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                PersonDialog dialog = PersonDialog.newInstance(position, persons.get(position).getName(), persons.get(position).getPhoneNumber(), persons);
-//                dialog.show(getFragmentManager(), "adf");
-                return false;
-            }
-        });
+
 
         return v;
     }

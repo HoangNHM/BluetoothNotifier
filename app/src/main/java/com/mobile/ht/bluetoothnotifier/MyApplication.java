@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class MyApplication extends Application {
 
     private static MyApplication singleton;
-    ArrayList<Person> persons;
+    public ArrayList<Person> persons;
 
     public static MyApplication getInstance(){
         return singleton;
