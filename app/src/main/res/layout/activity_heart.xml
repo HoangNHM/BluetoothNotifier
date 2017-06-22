@@ -10,16 +10,16 @@
         android:layout_width="350dp"
         android:layout_height="120dp"
         android:lineSpacingExtra="12sp"
-        android:text="95"
+        android:text="110"
         android:textAlignment="center"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="70sp"
         android:textStyle="bold"
         tools:layout_editor_absoluteX="33dp"
         tools:layout_editor_absoluteY="45dp"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/textViewNotice"
         android:layout_alignStart="@+id/textViewNotice"
-        android:layout_marginTop="78dp" />
+        android:layout_marginBottom="44dp" />
 
     <TextView
         android:id="@+id/textViewNotice"

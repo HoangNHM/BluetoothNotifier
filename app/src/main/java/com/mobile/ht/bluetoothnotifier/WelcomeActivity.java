@@ -17,7 +17,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         img=(ImageView)findViewById(R.id.imgView);
-        img.setImageResource(R.drawable.ic_action_name);
+        img.setImageResource(R.drawable.wellcome);
         img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
