@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -128,11 +129,16 @@ public class HeartActivity extends AppCompatActivity {
             }
         }
     };
+    private void PlaySound(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(this,R.raw.sound);
+        mediaPlayer.start();
+    }
 
     public void doCallAndSendMess(){
       for(int i=0;i<listNumber.size();i++){
           Call(this,listNumber.get(i));
           if(status.equals("off-hook")){
+              PlaySound();
               SendMessage(listNumber.get(i),"Msg");
               break;
           }else if(status.equals("idle")||status.equals("unknown")){
