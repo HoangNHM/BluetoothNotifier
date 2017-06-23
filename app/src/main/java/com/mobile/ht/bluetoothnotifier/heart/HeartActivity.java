@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mobile.ht.bluetoothnotifier.MyApplication;
 import com.mobile.ht.bluetoothnotifier.R;
 import com.mobile.ht.bluetoothnotifier.setting.Person;
 import com.mobile.ht.bluetoothnotifier.setting.SettingActivity;
@@ -35,9 +38,9 @@ public class HeartActivity extends AppCompatActivity {
     public TextView number, notice;
     public ImageView img;
     public int i;
-    public List<Person> persons;
-    public List<String> listNumber;
-    String status;
+    public List<Person> persons= MyApplication.getInstance().persons;
+    public List<String> listNumber= new ArrayList<>();
+    String status="unknown";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,9 @@ public class HeartActivity extends AppCompatActivity {
     public void Map(){
         img=(ImageView)findViewById(R.id.imgView);
         number=(TextView)findViewById(R.id.textViewnumber);
-        number.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.images,0,0,0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            number.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.images,0,0,0);
+        }
         notice=(TextView)findViewById(R.id.textViewNotice);
     }
     public void Check(){
@@ -64,7 +69,7 @@ public class HeartActivity extends AppCompatActivity {
                            "Step 2: Before ambulance arrive, put nitroglycerin under patient's tongue, keep the patient in half-sitting position\n"+
                            "Step 3: Perform artificial respiration\n"+
                            "Step 4: While emergency arrive, \n");
-
+                doCallAndSendMess();
         }
     }
     public void Call(Context context,String num){
@@ -80,9 +85,8 @@ public class HeartActivity extends AppCompatActivity {
         }
     }
 
-    public void SendMessage(String number){
+    public void SendMessage(String number, String msg){
         Log.i("Send SMS", "");
-        String msg= "MSG";
         try {
             Intent intent=new Intent(getApplicationContext(),HeartActivity.class);
             PendingIntent pi=PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
@@ -97,11 +101,12 @@ public class HeartActivity extends AppCompatActivity {
         }
     }
 
+
     public void SoundandVibrate(){
         MediaPlayer media= MediaPlayer.create(HeartActivity.this, R.raw.sound);
         media.start();
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(5000);
+        v.vibrate(1000);
     }
     PhoneStateListener phoneStateListener= new PhoneStateListener(){
         @Override
@@ -110,17 +115,32 @@ public class HeartActivity extends AppCompatActivity {
             switch (state) {
                 case TelephonyManager.CALL_STATE_IDLE:
                     Toast.makeText(HeartActivity.this, "CALL_STATE_IDLE", Toast.LENGTH_SHORT).show();
+                    status="idle";
                     break;
                 case TelephonyManager.CALL_STATE_RINGING:
                     Toast.makeText(HeartActivity.this, "CALL_STATE_RINGING", Toast.LENGTH_SHORT).show();
+                    status="ringing";
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK:
                     Toast.makeText(HeartActivity.this, "CALL_STATE_OFFHOOK", Toast.LENGTH_SHORT).show();
+                    status="off-hook";
                     break;
             }
         }
     };
 
+    public void doCallAndSendMess(){
+      for(int i=0;i<listNumber.size();i++){
+          Call(this,listNumber.get(i));
+          if(status.equals("off-hook")){
+              SendMessage(listNumber.get(i),"Msg");
+              break;
+          }else if(status.equals("idle")||status.equals("unknown")){
+              Call(this,listNumber.get(i+1));
+              SendMessage(listNumber.get(i),"Msg");
+          }
+      }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
