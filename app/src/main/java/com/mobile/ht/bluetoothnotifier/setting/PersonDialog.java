@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.mobile.ht.bluetoothnotifier.MyApplication;
 import com.mobile.ht.bluetoothnotifier.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by vantuegia on 6/22/2017.
@@ -62,7 +62,9 @@ public class PersonDialog extends DialogFragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // add 1 person to shared reference
                 persons.set(position, new Person(etName.getText().toString(), etPhoneNumber.getText().toString()));
+                MyApplication.getInstance().savePersonsToPref(persons);
                 PersonDialog.this.dismiss();
                 personAdapter.notifyDataSetChanged();
 

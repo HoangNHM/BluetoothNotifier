@@ -17,14 +17,12 @@
         <activity android:name=".WelcomeActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".heart.HeartActivity" android:noHistory="true"/>
+        <activity android:name=".heart.HeartActivity"/>
         <activity
-            android:name=".setting.SettingActivity"
-            android:noHistory="true" />
+            android:name=".setting.SettingActivity"/>
 
         <!--<receiver android:name=".IncomingBroadcastReceiver">-->
             <!--<intent-filter>-->

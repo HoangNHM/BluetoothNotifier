@@ -2,10 +2,12 @@ package com.mobile.ht.bluetoothnotifier;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mobile.ht.bluetoothnotifier.heart.HeartActivity;
 import com.mobile.ht.bluetoothnotifier.setting.Person;
 
 import java.lang.reflect.Type;
@@ -44,7 +46,12 @@ public class MyApplication extends Application {
             Type type = new TypeToken<List<Person>>(){}.getType();
             persons = gson.fromJson(json, type);
         }
+    }
 
+    public void savePersonsToPref(List<Person> persons) {
+        Gson gson = new Gson();
+        String json = gson.toJson(persons);
+        pref.edit().putString("persons", json).commit();
     }
 
 }

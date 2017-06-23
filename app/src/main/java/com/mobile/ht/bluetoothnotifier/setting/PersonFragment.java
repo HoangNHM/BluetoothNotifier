@@ -2,10 +2,13 @@ package com.mobile.ht.bluetoothnotifier.setting;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,9 +113,8 @@ public class PersonFragment extends Fragment {
         lvPerson.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                persons.remove(position);
-                personAdapter.notifyDataSetChanged();
-                return false;
+                alert(position);
+                return true;
             }
         });
 
@@ -126,17 +128,6 @@ public class PersonFragment extends Fragment {
                 // edit
                 PersonDialog dialog = PersonDialog.newInstance(personAdapter, persons.size() - 1, (ArrayList<Person>) persons);
                 dialog.show(getFragmentManager(), "personDialog");
-            }
-        });
-        //btn Done
-        Button btnDone = (Button) v.findViewById(R.id.btnDone);
-        btnDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Gson gson = new Gson();
-                String json = gson.toJson(persons);
-                MyApplication.getInstance().pref.edit().putString("persons", json).commit();
-                startActivity(new Intent(getActivity(), HeartActivity.class));
             }
         });
         return v;
@@ -179,5 +170,31 @@ public class PersonFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void alert(final int position) {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(getContext());
+        }
+        builder.setTitle("Delete entry")
+                .setMessage("Are you sure you want to delete this entry?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                        persons.remove(position);
+                        MyApplication.getInstance().savePersonsToPref(persons);
+                        personAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

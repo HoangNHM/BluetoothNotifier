@@ -36,6 +36,9 @@ public class WelcomeActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             Intent intent= new Intent(this, SettingActivity.class);
+            Bundle args = new Bundle();
+            args.putBoolean("isFirstTime", true);
+            intent.putExtras(args);
             startActivity(intent);
         }
     }
