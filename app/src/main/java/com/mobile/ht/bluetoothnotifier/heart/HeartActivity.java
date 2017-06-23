@@ -1,15 +1,20 @@
 package com.mobile.ht.bluetoothnotifier.heart;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -30,12 +35,19 @@ public class HeartActivity extends AppCompatActivity {
     public TextView number, notice;
     public ImageView img;
     public int i;
+    public List<Person> persons;
+    public List<String> listNumber;
+    String status;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heart);
         Map();
         Check();
+        for(int i=0;i<persons.size();i++){
+            listNumber.add(persons.get(i).getPhoneNumber());
+        }
     }
     public void Map(){
         img=(ImageView)findViewById(R.id.imgView);
@@ -55,17 +67,14 @@ public class HeartActivity extends AppCompatActivity {
 
         }
     }
-    public void Call(String num){
+    public void Call(Context context,String num){
         if(!TextUtils.isEmpty(num)){
             String dial = "tel:" + num;
             Intent intent =new Intent(Intent.ACTION_CALL, Uri.parse(dial));
-            try{
-                startActivity(intent);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
-
-            catch (android.content.ActivityNotFoundException ex){
-                Toast.makeText(getApplicationContext(),"yourActivity is not founded",Toast.LENGTH_SHORT).show();
-            }
+            context.startActivity(intent);
         }else {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
         }
@@ -94,6 +103,23 @@ public class HeartActivity extends AppCompatActivity {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(5000);
     }
+    PhoneStateListener phoneStateListener= new PhoneStateListener(){
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            super.onCallStateChanged(state, incomingNumber);
+            switch (state) {
+                case TelephonyManager.CALL_STATE_IDLE:
+                    Toast.makeText(HeartActivity.this, "CALL_STATE_IDLE", Toast.LENGTH_SHORT).show();
+                    break;
+                case TelephonyManager.CALL_STATE_RINGING:
+                    Toast.makeText(HeartActivity.this, "CALL_STATE_RINGING", Toast.LENGTH_SHORT).show();
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    Toast.makeText(HeartActivity.this, "CALL_STATE_OFFHOOK", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
