@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context="com.mobile.ht.bluetoothnotifier.heart.HeartActivity">
 
+    <SeekBar
+        android:id="@+id/sbMan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="89"
+        android:max="120" />
+
     <TextView
         android:id="@+id/textViewnumber"
         android:layout_width="250dp"
@@ -15,7 +22,7 @@
         android:layout_marginBottom="49dp"
         android:background="@android:color/background_light"
         android:lineSpacingExtra="12sp"
-        android:text="110"
+        android:text="89"
         android:textAlignment="center"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="70sp"
