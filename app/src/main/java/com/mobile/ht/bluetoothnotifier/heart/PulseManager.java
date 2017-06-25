@@ -21,7 +21,10 @@ public abstract class PulseManager {
         return state;
     }
 
-    public void changeState(int pulse) {
+    public void changeState(int pulse, String s) {
+        if ("1".equalsIgnoreCase(s)) {
+            return;
+        }
         State state = pulseToState(pulse);
         if (currentState != state) {
             currentState = state;

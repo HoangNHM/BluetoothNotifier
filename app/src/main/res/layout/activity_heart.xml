@@ -6,7 +6,29 @@
     android:layout_height="match_parent"
     tools:context="com.mobile.ht.bluetoothnotifier.heart.HeartActivity">
 
+    <LinearLayout
+        android:id="@+id/bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <Button
+            android:id="@+id/scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="connect"
+            android:text="connect" />
+
+        <Button
+            android:id="@+id/discoverable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="discoverable"
+            android:text="discoverable" />
+    </LinearLayout>
+
     <SeekBar
+        android:layout_below="@id/bt"
         android:id="@+id/sbMan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,6 +51,14 @@
         android:textStyle="bold"
         tools:layout_editor_absoluteX="33dp"
         tools:layout_editor_absoluteY="45dp" />
+
+    <Button
+        android:layout_below="@id/textViewnumber"
+        android:id="@+id/btIsActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:onClick="isActive"/>
 
     <TextView
         android:id="@+id/textViewNotice"
