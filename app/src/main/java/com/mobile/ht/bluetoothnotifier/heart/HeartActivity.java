@@ -19,6 +19,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -37,8 +39,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.mobile.ht.bluetoothnotifier.MyApplication;
@@ -49,7 +57,10 @@ import com.mobile.ht.bluetoothnotifier.setting.SettingActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HeartActivity extends AppCompatActivity {
+public class HeartActivity extends AppCompatActivity
+        implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 10000;
     private static final int MY_SETTING_REQUEST = 10001;
     private static final String GOTO_SETTING_CALL_PHONE_PERMISSION = "didGoToSettingCallPhone";
@@ -62,31 +73,49 @@ public class HeartActivity extends AppCompatActivity {
     public List<String> listNumber = new ArrayList<>();
     String status = "unknown";
     private FusedLocationProviderClient mFusedLocationClient;
+    GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
     LatLng latLng;
     PulseManager pulseManager = new PulseManager() {
         @Override
         protected void alert() {
-            for (Person person : persons) {
-                notice.setText("Step 1: Dial 115 immediately \n" +
-                        "Step 2: Before ambulance arrive, put nitroglycerin under patient's tongue, keep the patient in half-sitting position\n"+
-                        "Step 3: Perform artificial respiration\n"+
-                        "Step 4: While emergency arrive, ... \n");
-                SoundandVibrate();
-                String gMapLink = String.format("http://maps.google.com/?q=%s,%s", latLng.latitude, latLng.longitude);
-                SendMessage(person.getPhoneNumber(), "SOS at: " + (null!= latLng ? gMapLink : "unknown location"));
-                Call(HeartActivity.this, person.getPhoneNumber());
-            }
+            doAlert();
         }
 
         @Override
         protected void high() {
-            notice.setText("Take pills and go to doctor");
-            SoundandVibrate();
+            doHigh();
         }
 
         @Override
-        protected void normal() {}
+        protected void normal() {
+            doNormal();
+        }
     };
+
+    private void doNormal() {
+        notice.setText("");
+    }
+
+    private void doAlert() {
+        for (Person person : persons) {
+            notice.setText("Step 1: Dial 115 immediately \n" +
+                    "Step 2: Before ambulance arrive, put nitroglycerin under patient's tongue, keep the patient in half-sitting position\n"+
+                    "Step 3: Perform artificial respiration\n"+
+                    "Step 4: While emergency arrive, ... \n");
+            SoundandVibrate();
+            if (null != latLng) {
+                String gMapLink = String.format("http://maps.google.com/?q=%s,%s", latLng.latitude, latLng.longitude);
+                SendMessage(person.getPhoneNumber(), "SOS at: " + (null != latLng ? gMapLink : "unknown location"));
+            }
+            Call(HeartActivity.this, person.getPhoneNumber());
+        }
+    }
+
+    private void doHigh() {
+        notice.setText("Take pills and go to doctor");
+        SoundandVibrate();
+    }
 
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -270,6 +299,22 @@ public class HeartActivity extends AppCompatActivity {
         ensureDiscoverable();
     }
 
+    public void getPermissionToReadSMS() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_SMS)) {
+                    Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.READ_SMS},
+                        10215);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -281,6 +326,11 @@ public class HeartActivity extends AppCompatActivity {
         // Bluetooth
         initBluetooth();
 
+        // SMS
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            getPermissionToReadSMS();
+        }
         Map();
         SeekBar sbMan = (SeekBar) findViewById(R.id.sbMan);
         sbMan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -340,7 +390,7 @@ public class HeartActivity extends AppCompatActivity {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            context.startActivity(intent);
+//            context.startActivity(intent);
         }else {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
         }
@@ -352,7 +402,7 @@ public class HeartActivity extends AppCompatActivity {
             Intent intent=new Intent(getApplicationContext(),HeartActivity.class);
             PendingIntent pi=PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(number, null, msg, pi, null);
+//            smsManager.sendTextMessage(number, null, msg, null, null);
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         }
         catch (Exception e) {
@@ -419,6 +469,8 @@ public class HeartActivity extends AppCompatActivity {
     }
 
     private void getLocation() {
+//        LocationRequest  mLocationRequest = new LocationRequest();
+//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
@@ -451,17 +503,18 @@ public class HeartActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_LOCATION );
             }
         } else {
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            }
-                        }
-                    });
+            buildGoogleApiClient();
         }
+    }
+
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     private void guideToSettingCallPhonePermission() {
@@ -560,16 +613,9 @@ public class HeartActivity extends AppCompatActivity {
                     // permission was granted, yay! Do the
                     // location-related task you need to do.
                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        mFusedLocationClient.getLastLocation()
-                                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                                    @Override
-                                    public void onSuccess(Location location) {
-                                        // Got last known location. In some rare situations this can be null.
-                                        if (location != null) {
-                                            latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                        }
-                                    }
-                                });
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
                     }
 
                 } else {
@@ -590,6 +636,34 @@ public class HeartActivity extends AppCompatActivity {
         } else {
             ((Button) view).setText("0");
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        latLng = new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     /*PhoneStateListener phoneStateListener = new PhoneStateListener(){
