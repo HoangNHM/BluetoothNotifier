@@ -71,6 +71,7 @@ public class HeartActivity extends AppCompatActivity {
                         "Step 2: Before ambulance arrive, put nitroglycerin under patient's tongue, keep the patient in half-sitting position\n"+
                         "Step 3: Perform artificial respiration\n"+
                         "Step 4: While emergency arrive, ... \n");
+                SoundandVibrate();
                 String gMapLink = String.format("http://maps.google.com/?q=%s,%s", latLng.latitude, latLng.longitude);
                 SendMessage(person.getPhoneNumber(), "SOS at: " + (null!= latLng ? gMapLink : "unknown location"));
                 Call(HeartActivity.this, person.getPhoneNumber());
@@ -78,7 +79,7 @@ public class HeartActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void hight() {
+        protected void high() {
             notice.setText("Take pills and go to doctor");
             SoundandVibrate();
         }
@@ -190,15 +191,33 @@ public class HeartActivity extends AppCompatActivity {
 //                    messageList.add(new androidRecyclerView.Message(counter++, writeMessage, "Me"));
                     break;
                 case MESSAGE_READ:
+                    int heartRate = 0;
+                    boolean isActive = false;
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    String[] mess = readMessage.split(";");
-                    String h = mess[0].split(":")[1];
-                    String a = mess[1].split(":")[1];
-                    number.setText(h);
-                    btIsActive.setText(a);
-                    pulseManager.changeState(Integer.parseInt(h), a);
+                    String[] inputs = readMessage.split(";");
+                    if(inputs.length != 2) {
+                        Toast.makeText(getApplicationContext(),
+                                "Wrong number of arguments. Expected 2 arguments separate by ;", Toast.LENGTH_SHORT).show();
+                        break;
+                    }else {
+                        for(int i=0; i<inputs.length; ++i) {
+                            String[] arg = inputs[i].split(":");
+                            if(arg[0].equalsIgnoreCase("h")) {
+                                heartRate = Integer.parseInt(arg[1]);
+                            }else if(arg[0].equalsIgnoreCase("a")){
+                                isActive = ((Integer.parseInt(arg[1]) == 0) ? false : true);
+                            }else {
+                                Toast.makeText(getApplicationContext(),
+                                        "Wrong format of arguments. It should be h:# or a:#", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+                    }
+                    number.setText(String.valueOf(heartRate));
+                    btIsActive.setText(isActive?"1":"0");
+                    pulseManager.changeState(heartRate, isActive?"1":"0");
 //                    mAdapter.notifyDataSetChanged();
 //                    messageList.add(new androidRecyclerView.Message(counter++, readMessage, mConnectedDeviceName));
                     break;
@@ -344,8 +363,8 @@ public class HeartActivity extends AppCompatActivity {
 
 
     public void SoundandVibrate(){
-        MediaPlayer media= MediaPlayer.create(HeartActivity.this, R.raw.sound);
-        media.start();
+//        MediaPlayer media= MediaPlayer.create(HeartActivity.this, R.raw.sound);
+//        media.start();
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(1000);
     }
@@ -378,6 +397,7 @@ public class HeartActivity extends AppCompatActivity {
           }
       }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

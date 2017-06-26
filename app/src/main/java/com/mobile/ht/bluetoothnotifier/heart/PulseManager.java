@@ -33,7 +33,7 @@ public abstract class PulseManager {
                     normal();
                     break;
                 case HIGH:
-                    hight();
+                    high();
                     break;
                 case ALERT:
                     alert();
@@ -45,7 +45,7 @@ public abstract class PulseManager {
 
     protected abstract void alert();
 
-    protected abstract void hight();
+    protected abstract void high();
 
     protected abstract void normal();
 
