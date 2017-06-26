@@ -193,7 +193,12 @@ public class HeartActivity extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    number.setText(readMessage);
+                    String[] mess = readMessage.split(";");
+                    String h = mess[0].split(":")[1];
+                    String a = mess[1].split(":")[1];
+                    number.setText(h);
+                    btIsActive.setText(a);
+                    pulseManager.changeState(Integer.parseInt(h), a);
 //                    mAdapter.notifyDataSetChanged();
 //                    messageList.add(new androidRecyclerView.Message(counter++, readMessage, mConnectedDeviceName));
                     break;
