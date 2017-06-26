@@ -390,7 +390,7 @@ public class HeartActivity extends AppCompatActivity
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-//            context.startActivity(intent);
+            context.startActivity(intent);
         }else {
             Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
         }
@@ -402,7 +402,7 @@ public class HeartActivity extends AppCompatActivity
             Intent intent=new Intent(getApplicationContext(),HeartActivity.class);
             PendingIntent pi=PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
             SmsManager smsManager = SmsManager.getDefault();
-//            smsManager.sendTextMessage(number, null, msg, null, null);
+            smsManager.sendTextMessage(number, null, msg, null, null);
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         }
         catch (Exception e) {
